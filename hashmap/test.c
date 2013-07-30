@@ -21,11 +21,47 @@ void test_hashmap(void) {
     printf("Hashmap tests passed\n");
 }
 
+void test_performance_store(struct hashmap *hm) {
+    struct timeval t0, t1;
+    int i;
+    int n = 100000;
+
+    gettimeofday(&t0, NULL);
+    for (i = 0; i < n; i++) {
+        set_key_value(hm, i, i);
+    }
+    gettimeofday(&t1, NULL);
+    printf("Stored %d keys in %.2g seconds\n", n,
+            t1.tv_sec - t0.tv_sec + 1E-6 * (t1.tv_usec - t0.tv_usec));
+}
+
+void test_performance_lookup(struct hashmap *hm) {
+    struct timeval t0, t1;
+    int i;
+    int n = 100000;
+
+    gettimeofday(&t0, NULL);
+    for (i = 0; i < n; i++) {
+        get_value_by_key(hm, i);
+    }
+    gettimeofday(&t1, NULL);
+    printf("Looked up %d keys in %.2g seconds\n", n,
+            t1.tv_sec - t0.tv_sec + 1E-6 * (t1.tv_usec - t0.tv_usec));
+}
+
+void test_performance(void) {
+    struct hashmap *hm = create_unbounded_hashmap(INTEGER_KEY, NULL);
+    test_performance_store(hm);
+    test_performance_lookup(hm);
+    delete_hashmap(hm);
+}
+
 int main(int argc, char *argv[]) {
     printf("Test result\n");
     printf("---------------\n");
     test_hashmap();
     printf("Hurray! All tests passed successfully!\n");
+    test_performance();
     printf("---------------\n");
     return 0;
 }
